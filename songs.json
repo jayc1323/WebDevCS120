@@ -1,3 +1,4 @@
+Access-Control-Allow-Origin: *
 songs = [
     {"title": "Fur Elise", "artist": "Beethoven", "year": 1867, "genre": ["Classical"]},
     {"title": "Layla", "artist": "Eric Clapton", "year": 1970, "genre": ["Rock", "Blues"]},
