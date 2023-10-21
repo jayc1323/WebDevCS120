@@ -16,7 +16,7 @@
 
   <script>
     // Get the JSON data from the songs.json file
-    $.get("songs.json", function(data) {
+    $.get("https://github.com/jayc1323/WebDevCS120/raw/main/songs.json", function(data) {
       // Populate the genre drop-down box with the unique genres from the JSON data
       var genres = [];
       for (var i = 0; i < data.length; i++) {
