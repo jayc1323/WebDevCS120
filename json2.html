@@ -8,22 +8,22 @@
   <div id="songs"></div>
 
   <script>
-    // Get the JSON data from the songs.json file
+
     $.get("songs.json", function(data) {
-      // Display the JSON data on the page
+    
       var songsDiv = document.getElementById("songs");
       songsDiv.innerHTML = "";
 
       for (var i = 0; i < data.length; i++) {
         var song = data[i];
 
-        // Create a string containing the song information
+       
         var songInfo = song.title + "<br>";
         songInfo += "Artist: " + song.artist + "<br>";
         songInfo += "Genre: " + song.genre.join(", ") + "<br>";
         songInfo += "Released " + song.year;
 
-        // Add the song information to the songs div
+        
         songsDiv.innerHTML += songInfo + "<br>";
       }
     });
