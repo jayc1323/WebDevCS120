@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JSON3</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+  <div id="songs"></div>
+
+  <form id="filter-form">
+    <select id="genre" name="genre">
+      <option value="">All Genres</option>
+    </select>
+    <button type="submit" id="filter-button">Filter</button>
+  </form>
+
+  <script>
+    // Get the JSON data from the songs.json file
+    $.get("songs.json", function(data) {
+      // Populate the genre drop-down box with the unique genres from the JSON data
+      var genres = [];
+      for (var i = 0; i < data.length; i++) {
+        var song = data[i];
+        for (var j = 0; j < song.genre.length; j++) {
+          var genre = song.genre[j];
+          if (!genres.includes(genre)) {
+            genres.push(genre);
+          }
+        }
+      }
+
+      var genreSelect = document.getElementById("genre");
+      for (var i = 0; i < genres.length; i++) {
+        var genreOption = document.createElement("option");
+        genreOption.value = genreOption.text = genres[i];
+        genreSelect.appendChild(genreOption);
+      }
+
+      // Add an event handler for the filter button
+      $("#filter-button").click(function() {
+        // Get the selected genre
+        var selectedGenre = $("#genre").val();
+
+        // Filter the JSON data to only include songs with the selected genre
+        var filteredSongs = data.filter(function(song) {
+          return song.genre.includes(selectedGenre);
+        });
+
+        // Display the song titles in the songs div
+        var songsDiv = document.getElementById("songs");
+        songsDiv.innerHTML = "";
+
+        for (var i = 0; i < filteredSongs.length; i++) {
+          var song = filteredSongs[i];
+          songsDiv.innerHTML += song.title + "<br>";
+        }
+
+        return false;
+      });
+    });
+  </script>
+</body>
+</html>
