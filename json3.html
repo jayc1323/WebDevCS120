@@ -15,9 +15,9 @@
   </form>
 
   <script>
-    // Get the JSON data from the songs.json file
+    
     $.get("songs.json", function(data) {
-      // Populate the genre drop-down box with the unique genres from the JSON data
+     
       var genres = [];
       for (var i = 0; i < data.length; i++) {
         var song = data[i];
@@ -36,17 +36,17 @@
         genreSelect.appendChild(genreOption);
       }
 
-      // Add an event handler for the filter button
+      
       $("#filter-button").click(function() {
-        // Get the selected genre
+        
         var selectedGenre = $("#genre").val();
 
-        // Filter the JSON data to only include songs with the selected genre
+       
         var filteredSongs = data.filter(function(song) {
           return song.genre.includes(selectedGenre);
         });
 
-        // Display the song titles in the songs div
+       
         var songsDiv = document.getElementById("songs");
         songsDiv.innerHTML = "";
 
