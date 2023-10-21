@@ -15,9 +15,9 @@
   </form>
 
   <script>
-    var jsonData; // Variable to store JSON data
+    var jsonData; 
 
-    // Function to populate the genre drop-down with unique genres
+  
     function populateGenreDropdown(data) {
       var genres = [];
       for (var i = 0; i < data.length; i++) {
@@ -33,26 +33,26 @@
       var genreSelect = $("#genre");
       genreSelect.empty(); // Clear existing options
 
-      // Add "All Genres" option
+     
       genreSelect.append($("<option>", { value: "", text: "All Genres" }));
 
-      // Add options for each unique genre
+     
       for (var i = 0; i < genres.length; i++) {
         genreSelect.append($("<option>", { value: genres[i], text: genres[i] }));
       }
     }
 
-    // Function to handle the filter button click
+   
     $("#filter-button").click(function() {
       // Get the selected genre
       var selectedGenre = $("#genre").val();
 
-      // Filter the JSON data to include songs with the selected genre
+     
       var filteredSongs = jsonData.filter(function(song) {
         return selectedGenre === "" || song.genre.includes(selectedGenre);
       });
 
-      // Display the song titles in the "songs" div
+     
       var songsDiv = $("#songs");
       songsDiv.empty(); // Clear existing content
 
@@ -62,7 +62,7 @@
       }
     });
 
-    // Get the JSON data from the "songs.json" file
+   
     $.get("songs.json", function(data) {
       jsonData = data; // Store JSON data in the variable
       populateGenreDropdown(data); // Populate the genre dropdown
