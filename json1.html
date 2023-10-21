@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSON Songs</title>
+</head>
+<body>
+    <script>
+        var songs = [
+            {"title": "Fur Elise", "artist": "Beethoven", "year": 1867, "genre": ["Classical"]},
+            {"title": "Layla", "artist": "Eric Clapton", "year": 1970, "genre": ["Rock", "Blues"]},
+            {"title": "Shape Of You", "artist": "Ed Sheeran", "year": 2016, "genre": ["Pop", "R&B"]},
+            {"title": "Hotel California", "artist": "The Eagles", "year": 1972, "genre": ["Soft Rock"]},
+            {"title": "Smack That", "artist": "Akon", "year": 2006, "genre": ["Hip Hop", "R&B"]},
+            {"title": "In the End", "artist": "Linkin Park", "year": 2001, "genre": ["Alternative Rock", "Nu Metal"]},
+            {"title": "Malaguena", "artist": "Ernesto Lecuena", "year": 1950, "genre": ["Flamenco", "Latin"]},
+            {"title": "Bad Guy", "artist": "Billie Eilish", "year": 2020, "genre": ["Pop", "Electronic"]},
+            {"title": "Writing's on the Wall", "artist": "Sam Smith", "year": 2018, "genre": ["Soul"]},
+            {"title": "Enter Sandman", "artist": "Metallica", "year": 1991, "genre": ["Thrash Metal"]}
+        ];
+
+        
+        var jsonString = JSON.stringify(songs, null, 4);
+        document.write("<pre>" + jsonString + "</pre>");
+    </script>
+</body>
+</html>
