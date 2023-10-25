@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Alpha Vantage API Example</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Alpha Vantage API (IBM) </h1>
+
+    <h2>Data fetched using AJAX:</h2>
+    <div id="ajax-data"></div>
+
+    <script>
+        apiKey = "demo";
+        symbol = "IBM";
+        apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${symbol}&apikey=${apiKey}`;
+
+        ajaxDataContainer = document.getElementById("ajax-data");
+        xhr = new XMLHttpRequest();
+        xhr.open("GET", apiUrl, true);
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                response = JSON.parse(xhr.responseText);
+                display_data(response, ajaxDataContainer);
+            } else {
+                ajaxDataContainer.innerHTML = "Failed to fetch data using AJAX.";
+            }
+        };
+        xhr.onerror = function () {
+            ajaxDataContainer.innerHTML = "Failed to fetch data using AJAX due to a network error.";
+        };
+        xhr.send();
+
+        function display_data(data, container) {
+            timeSeries = data["Time Series (Daily)"];
+            dates = Object.keys(timeSeries);
+            table = document.createElement("table");
+            headerRow = table.insertRow();
+            headerCell1 = headerRow.insertCell(0);
+            headerCell2 = headerRow.insertCell(1);
+            headerCell3 = headerRow.insertCell(2);
+            headerCell4 = headerRow.insertCell(3);
+            headerCell1.textContent = "Date";
+            headerCell2.textContent = "Adjusted Close Price";
+            headerCell3.textContent = "Open Price";
+            headerCell4.textContent = "High Price";
+
+            for (const date of dates) {
+                dailyData = timeSeries[date];
+                 openPrice = dailyData["1. open"];
+               highPrice = dailyData["2. high"];
+                 lowPrice = dailyData["3. low"];
+               adjustedClosePrice = dailyData["4. close"];
+
+                row = table.insertRow();
+                cell1 = row.insertCell(0);
+                cell2 = row.insertCell(1);
+                cell3 = row.insertCell(2);
+                cell4 = row.insertCell(3);
+                cell1.textContent = date;
+                cell2.textContent = adjustedClosePrice;
+                cell3.textContent = openPrice;
+                cell4.textContent = highPrice;
+            }
+
+            container.innerHTML = "";
+            container.appendChild(table);
+        }
+    </script>
+</body>
+<br>
+<br>
+<div>
+    <ol>
+        <li>
+            The API I selected provides time series daily data for IBM stock prices.
+        </li>
+        <li>
+            Website : <a href="https://www.alphavantage.co/"> Alpha Vantage</a>
+        </li>
+        <li>
+            options/parameters I used for the API request were: 1> function -"TIME_SERIES_DAILY_ADJUSTED"
+            <br>                                                2>symbol(equity name)-"IBM"
+            <br>                                                3>key-"demo"
+        </li>
+        <li>
+            It provides real time US market time series data for investors,traders,quantitative researchers to be used
+            in quantitative investing, machine learning,software development, blockchain technology.
+        </li>
+    </ol>
+</div>
+</html>
