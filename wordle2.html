@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans&family=Metal+Mania&family=Newsreader:opsz,wght@6..72,600&family=Playfair+Display:wght@500&family=Roboto:wght@300&family=Rock+Salt&display=swap" rel="stylesheet">
+    <title>Wordle</title>
+    <style>
+        .board {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+
+        .letter-box {
+            width: 50px;
+            height: 50px;
+            border: 1px solid black;
+            text-align: center;
+            margin: 5px;
+            background-color: wheat;
+            font-family: Newsreader;
+            font-size: 24px;
+            line-height: 50px;
+        }
+
+        .correct {
+            background-color: green;
+        }
+
+        .wrong-place {
+            background-color: yellow;
+        }
+
+        .left-panel {
+            font-family: Newsreader, cursive;
+            font-size: 40px;
+            text-transform: uppercase;
+            color: whitesmoke;
+        }
+
+        .not-in-word {
+            background-color: red;
+        }
+
+        body {
+            background-image: url("back.jpg");
+            background-size: cover;
+        }
+
+        #new-game-button {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="left-panel">
+    Wordle
+</div>
+<div class="board">
+    <div id="guess-input-row">
+        <input type="text" id="guess-input">
+        <button id="guess-button">Submit</button>
+    </div>
+    <div id="board-container"></div>
+    <button id="new-game-button">New Game</button>
+    <button id="music-control">Play Music</button>
+</div>
+
+<script>
+    const randomWordApiUrl = "https://random-word-api.herokuapp.com/word?number=1&length=5";
+    let answerWord = "";
+
+    fetch(randomWordApiUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                answerWord = data[0].toUpperCase();
+                createBoard();
+                console.log("Answer Word: " + answerWord);
+            }
+        })
+        .catch(error => console.error("Failed to fetch the answer word: " + error));
+
+    let numberOfGuesses = 0;
+    const audio = new Audio("hand-print-166102.mp3");
+    const musicControl = document.getElementById("music-control");
+
+    let isMusicPlaying = false;
+
+    musicControl.addEventListener("click", () => {
+        if (isMusicPlaying) {
+            audio.pause();
+            musicControl.textContent = "Play Music";
+        } else {
+            audio.play();
+            musicControl.textContent = "Pause Music";
+        }
+        isMusicPlaying = !isMusicPlaying;
+    });
+
+    function createBoard() {
+        const boardContainer = document.getElementById("board-container");
+
+        for (let i = 0; i < 6; i++) {
+            const row = document.createElement("div");
+            row.classList.add("row");
+
+            for (let j = 0; j < 5; j++) {
+                const letterBox = document.createElement("div");
+                letterBox.classList.add("letter-box");
+                letterBox.id = `letter-box-${i}-${j}`;
+
+                row.appendChild(letterBox);
+            }
+
+            boardContainer.appendChild(row);
+        }
+    }
+
+    function checkGuess(guess) {
+    const guessArray = guess.toUpperCase().split("");
+  
+    const correctIndexes = new Set();
+    const wrongIndexes = new Set();
+    const correctLetters = new Set();
+  
+    for (let i = 0; i < 5; i++) {
+      const letterBox = document.getElementById(`letter-box-${numberOfGuesses}-${i}`);
+      const guessLetter = guessArray[i];
+      const answerLetter = answerWord[i];
+  
+      if (guessLetter === answerLetter) {
+        letterBox.classList.add("correct");
+        correctIndexes.add(i);
+        correctLetters.add(guessLetter);
+      } else {
+        if (answerWord.includes(guessLetter)) {
+          const indexInAnswer = answerWord.indexOf(guessLetter);
+          if (!correctIndexes.has(indexInAnswer) && !correctLetters.has(guessLetter)) {
+            letterBox.classList.add("wrong-place");
+            wrongIndexes.add(i);
+          } else {
+            letterBox.classList.add("not-in-word");
+          }
+        } else {
+          letterBox.classList.add("not-in-word");
+        }
+      }
+      letterBox.textContent = guessLetter;
+    }
+  
+    numberOfGuesses++;
+  
+    if (numberOfGuesses >= 6) {
+      // Check if the user has lost after 6 attempts
+      alert("You lose! The answer was: " + answerWord);
+      toggleNewGameButton();
+    } else {
+      const correctLettersCount = document.querySelectorAll(".correct").length;
+      if (correctLettersCount === 5) {
+        // Check if the user has won
+        alert("You win! The answer was: " + answerWord);
+        toggleNewGameButton();
+      }
+    }
+  }
+
+
+    function toggleNewGameButton() {
+        document.getElementById("new-game-button").style.display = "block";
+    }
+
+    function checkGameOver() {
+        if (numberOfGuesses === 6) {
+            toggleNewGameButton();
+        }
+    }
+
+    function newGame() {
+        location.reload();
+    }
+
+    function submitGuess() {
+  const guess = document.getElementById("guess-input").value;
+
+  if (guess.length !== 5) {
+    alert("Please enter a 5-letter word.");
+    return;
+  }
+
+  checkGuess(guess);
+  
+  
+  checkWinCondition();
+}
+function checkWinCondition() {
+  const correctLetters = document.querySelectorAll(".correct");
+  if (correctLetters.length === 5) {
+    alert("You win!");
+    toggleNewGameButton();
+  } else if (numberOfGuesses === 6) {
+    alert("You lose! The answer was: " + answerWord);
+    toggleNewGameButton();
+  }
+  checkGameOver();
+}
+
+
+document.getElementById("guess-button").addEventListener("click", submitGuess);
+
+    
+    document.getElementById("new-game-button").addEventListener("click", newGame);
+</script>
+</body>
+</html>
