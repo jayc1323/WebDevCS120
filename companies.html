@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Company Lookup</title>
+</head>
+<body>
+  <h1>Company Lookup</h1>
+  <form action="/lookup" method="POST">
+    <label for="searchInput">Search:</label>
+    <input type="text" id="searchInput" name="searchInput" placeholder="Enter company name or symbol" required>
+    <br>
+    <input type="radio" id="symbolRadio" name="searchType" value="symbol">
+    <label for="symbolRadio">Symbol</label>
+    <input type="radio" id="companyNameRadio" name="searchType" value="companyName">
+    <label for="companyNameRadio">Company Name</label>
+    <br>
+    <input type="submit" value="Search">
+  </form>
+</body>
+</html>
