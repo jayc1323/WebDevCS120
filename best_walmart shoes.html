@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Walmart Shoe Search</title>
+</head>
+<body>
+  <h1>Walmart Shoe Search</h1>
+
+  <div id="results"></div>
+
+  <script>
+    window.onload = function() {
+      const searchTerm = 'shoe';
+      const apiKey = '8FA5D349105C4AFABD5752D63AC6DAC1';
+      const apiUrl = `https://api.bluecartapi.com/request?api_key=${apiKey}&search_term=${encodeURIComponent(searchTerm)}&type=search&sort_by=price_low_to_high`;
+
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok.');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.search_results && data.search_results.length > 0) {
+            const filteredResults = data.search_results.filter(product => {
+              const productPrice = product.offers.primary?.price || Number.MAX_SAFE_INTEGER;
+              return productPrice !== 'N/A'; // Filter out products with 'N/A' price
+            });
+            displayResults(filteredResults);
+          } else {
+            throw new Error('No shoe products found');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('results').innerHTML = '<p>Error fetching data. Please try again.</p>';
+        });
+    }
+
+    function displayResults(products) {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      products.forEach(product => {
+        const productName = product.product.title || 'N/A';
+        const productLink = product.product.link || '#';
+        const productPrice = product.offers.primary?.price || 'N/A';
+        const productImage = product.product.main_image || '';
+
+        const productElement = document.createElement('div');
+        productElement.innerHTML = `
+          <p>Name: ${productName}</p>
+          <p>Price: ${productPrice}</p>
+          <p>URL: <a href="${productLink}" target="_blank">${productLink}</a></p>
+          <img src="${productImage}" alt="${productName}" style="max-width: 200px; max-height: 200px;">
+        `;
+        resultsDiv.appendChild(productElement);
+      });
+    }
+  </script>
+</body>
+</html>

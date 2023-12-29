@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Search</title>
+</head>
+<body>
+  <h1>Product Search</h1>
+  <input type="text" id="searchTerm" placeholder="Enter product name">
+  <label for="maxValue">Filter by max value:</label>
+  <input type="number" id="maxValue" placeholder="Enter max value">
+  <button onclick="searchProducts()">Search</button>
+
+  <div id="results"></div>
+
+  <script>
+    function searchProducts() {
+      const searchTerm = document.getElementById('searchTerm').value;
+      const maxValue = document.getElementById('maxValue').value || Number.MAX_SAFE_INTEGER;
+      const apiKey = '5F5659AA40D94D89B18DC8BCCCA14CAF';
+      const apiUrl = `https://api.redcircleapi.com/request?api_key=${apiKey}&search_term=${encodeURIComponent(searchTerm)}&type=search&sort_by=price_low_to_high`;
+
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok.');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.search_results && data.search_results.length > 0) {
+            const filteredResults = data.search_results.filter(product => {
+              const productPrice = product.offers.primary?.price || Number.MAX_SAFE_INTEGER;
+              return productPrice <= maxValue;
+            });
+            displayResults(filteredResults);
+          } else {
+            throw new Error('No products found');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('results').innerHTML = '<p>Error fetching data. Please try again.</p>';
+        });
+    }
+
+    function displayResults(products) {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      products.forEach(product => {
+        const productName = product.product.title;
+        const productLink = product.product.link;
+        const productPrice = product.offers.primary?.price;
+        const productImage = product.product.main_image;
+
+        const productElement = document.createElement('div');
+        productElement.innerHTML = `
+          <p>Name: ${productName}</p>
+          <p>Price: ${productPrice ? '$' + productPrice : 'N/A'}</p>
+          <p>URL: <a href="${productLink}" target="_blank">${productLink}</a></p>
+          <img src="${productImage}" alt="${productName}" style="max-width: 200px; max-height: 200px;">
+        `;
+        resultsDiv.appendChild(productElement);
+      });
+    }
+  </script>
+</body>
+</html>
+
+

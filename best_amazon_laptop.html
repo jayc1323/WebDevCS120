@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Laptop Deals</title>
+</head>
+<body>
+  <h1>Laptop Deals on Amazon</h1>
+
+  <div id="results"></div>
+
+  <script>
+    window.onload = async function() {
+      try {
+        const apiKey = '226AA6DBD9324E1B9DCA1E7CCA29BFBA';
+        const apiUrl = `https://api.rainforestapi.com/request?api_key=${apiKey}&type=search&amazon_domain=amazon.com&search_term=laptop&sort_by=price_low_to_high&currency=usd`;
+
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        const data = await response.json();
+        if (data && data.search_results && data.search_results.length > 0) {
+          displayResults(data.search_results);
+        } else {
+          throw new Error('No laptop deals found');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('results').innerHTML = '<p>Error fetching data. Please try again.</p>';
+      }
+    }
+
+    function displayResults(products) {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      products.forEach(product => {
+        const productName = product.title || 'N/A';
+        const productLink = product.link || '#';
+        let productPrice = 'N/A'; 
+
+        if (product.price && product.price.value) {
+          productPrice = '$' + product.price.value; 
+        } else if (product.prices && product.prices.length > 0) {
+         
+          productPrice = '$' + product.prices[0].value;
+        }
+
+        if (productPrice !== 'N/A') {
+          const productImage = product.image || '';
+
+          const productElement = document.createElement('div');
+          productElement.innerHTML = `
+            <p>Name: ${productName}</p>
+            <p>Price: ${productPrice}</p>
+            <p>URL: <a href="${productLink}" target="_blank">${productLink}</a></p>
+            <img src="${productImage}" alt="${productName}" style="max-width: 200px; max-height: 200px;">
+          `;
+          resultsDiv.appendChild(productElement);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

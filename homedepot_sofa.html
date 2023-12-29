@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sofa Set</title>
+</head>
+<body onload="searchForSofa()">
+  <h1>Sofa Set</h1>
+
+  <div id="results"></div>
+
+  <script>
+    function searchForSofa() {
+      const searchTerm = 'sofa'; 
+      const maxPrice = Number.MAX_SAFE_INTEGER; 
+      const apiKey = 'C722A7254EC349A1AA86B93CAA041EBC';
+      const apiUrl = `https://api.bigboxapi.com/request?api_key=${apiKey}&search_term=${encodeURIComponent(searchTerm)}&type=search`;
+
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok.');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.search_results && data.search_results.length > 0) {
+            const filteredResults = data.search_results.filter(product => {
+              const productPrice = product.offers.primary?.price || Number.MAX_SAFE_INTEGER;
+              return productPrice <= maxPrice;
+            });
+            displayResults(filteredResults);
+          } else {
+            throw new Error('No products found');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('results').innerHTML = '<p>Error fetching data. Please try again.</p>';
+        });
+    }
+
+    function displayResults(products) {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      products.forEach(product => {
+        const productName = product.product.title || 'N/A';
+        const productLink = product.product.link || '#';
+        const productImage = product.product.primary_image || '';
+        const productPrice = product.offers.primary?.price || 'N/A';
+
+        const productElement = document.createElement('div');
+        productElement.innerHTML = `
+          <p>Name: ${productName}</p>
+          <p>Price: ${productPrice ? '$' + productPrice : 'N/A'}</p>
+          <p>URL: <a href="${productLink}" target="_blank">${productLink}</a></p>
+          <img src="${productImage}" alt="${productName}" style="max-width: 200px; max-height: 200px;">
+        `;
+        resultsDiv.appendChild(productElement);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cellphones</title>
+</head>
+<body>
+  <h1>Product Search</h1>
+  
+  <div id="results"></div>
+
+  <script>
+  
+    function searchCellphones() {
+      const searchTerm = 'cellphone'; 
+
+      const apiKey = '06483F3CE63B423497BD3345B4452D8D';
+      const apiUrl = `https://api.countdownapi.com/request?api_key=${apiKey}&ebay_domain=ebay.com&search_term=${encodeURIComponent(searchTerm)}&type=search`;
+
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok.');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.search_results && data.search_results.length > 0) {
+            displayResults(data.search_results);
+          } else {
+            throw new Error('No products found');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('results').innerHTML = '<p>Error fetching data. Please try again.</p>';
+        });
+    }
+
+    
+    function displayResults(products) {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      products.forEach(product => {
+        const productName = product.title || 'N/A';
+        const productLink = product.link || '#';
+        const productImage = product.image || '';
+        const productCondition = product.condition || 'N/A';
+        const productPrice = product.price && product.price.raw ? product.price.raw : 'N/A';
+
+        const productElement = document.createElement('div');
+        productElement.innerHTML = `
+          <p>Name: ${productName}</p>
+          <p>Condition: ${productCondition}</p>
+          <p>Price: ${productPrice}</p>
+          <p>Link: <a href="${productLink}" target="_blank">${productLink}</a></p>
+          <img src="${productImage}" alt="${productName}" style="max-width: 200px; max-height: 200px;">
+        `;
+        resultsDiv.appendChild(productElement);
+      });
+    }
+
+    window.onload = searchCellphones();
+  </script>
+</body>
+</html>
